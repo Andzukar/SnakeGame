@@ -5,16 +5,14 @@ namespace SnakeGame
 {
     internal class Snake
     {
-        private Dictionary<int, SnakeItem> _snake;
-        private readonly Map _map;
+        private Dictionary<int, SnakeItem> _snakeParts;
         private readonly Apple _apple;
 
-        private SnakeItem SnakeHead => _snake[0];
+        private SnakeItem SnakeHead => _snakeParts[0];
 
-        internal Snake(Map map, Apple apple)
+        internal Snake(Apple apple)
         {
-            _snake = new Dictionary<int, SnakeItem>();
-            _map = map;
+            _snakeParts = new Dictionary<int, SnakeItem>();
             _apple = apple;
         }
 
@@ -48,12 +46,13 @@ namespace SnakeGame
             {
                 case Constant.MapBorderDesignation:
                 case Constant.SnakeDesignation 
-                when SnakeHead.CurrentPosition.X != x && SnakeHead.CurrentPosition.Y != y:
+                when y != SnakeHead.CurrentPosition.X && x != SnakeHead.CurrentPosition.Y:
                     Console.Clear();
+                    _snakeParts.Clear();
                     Console.WriteLine("Вы проиграли!");
                     return false;
                 case Constant.AppleDesignation:
-                    AddNewItem(x, y);
+                    AddNewSnakePart(x, y);
                     map[y, x] = Constant.EmptyCell;
                     _apple.CreateApple(map);
                     break;
@@ -66,25 +65,25 @@ namespace SnakeGame
 
         private void UpdateSnakePositions(int x, int y, char[,] map)
         {
-            for (var i = _snake.Count - 1; i > 0; i--)
+            for (var i = _snakeParts.Count - 1; i > 0; i--)
             {
-                _snake[i].PreviousPosition = _snake[i].CurrentPosition;
-                _snake[i].CurrentPosition = _snake[i - 1].CurrentPosition;
+                _snakeParts[i].PreviousPosition = _snakeParts[i].CurrentPosition;
+                _snakeParts[i].CurrentPosition = _snakeParts[i - 1].CurrentPosition;
             }
 
             SnakeHead.CurrentPosition = new Position(x, y);
 
-            foreach (var part in _snake.Values)
+            foreach (var part in _snakeParts.Values)
             {
                 map[part.CurrentPosition.Y, part.CurrentPosition.X] = Constant.SnakeDesignation;
                 map[part.PreviousPosition.Y, part.PreviousPosition.X] = Constant.EmptyCell;
             }
         }
 
-        internal void AddNewItem(int x, int y)
+        internal void AddNewSnakePart(int x, int y)
         {
-            var newItem = new SnakeItem(_snake.LastOrDefault().Value?.PreviousPosition ?? new Position(x, y), new Position(x, y));
-            _snake.Add(_snake.Count, newItem);
+            var newItem = new SnakeItem(_snakeParts.LastOrDefault().Value?.PreviousPosition ?? new Position(x, y), new Position(x, y));
+            _snakeParts.Add(_snakeParts.Count, newItem);
         }
     }
 

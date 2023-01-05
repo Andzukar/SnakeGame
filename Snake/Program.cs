@@ -10,7 +10,7 @@ namespace SnakeGame
             Console.CursorVisible = false;
             var apple = new Apple();
             var map = new Map();
-            var snake = new Snake(map, apple);
+            var snake = new Snake(apple);
 
             while (true)
             {
@@ -30,7 +30,7 @@ namespace SnakeGame
                     Console.BackgroundColor = ConsoleColor.DarkYellow;
                     var newMap = map.GenerateMap(size);
                     var (x, y) = (size / 2, size / 2);
-                    snake.AddNewItem(x, y);
+                    snake.AddNewSnakePart(x, y);
                     apple.CreateApple(newMap);
                     while (true)
                     {

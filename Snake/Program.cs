@@ -11,7 +11,7 @@ namespace SnakeGame
             var apple = new Apple();
             var map = new Map();
             var snake = new Snake(apple);
-            var score = 0;
+            var score = 1;
 
             snake.ScoreUp += () =>
             {
@@ -40,14 +40,14 @@ namespace SnakeGame
                     apple.CreateApple(newMap);
                     while (true)
                     {
-                        Console.Clear();   
+                        Console.Clear();
                         snake.MakeStep(ref x, ref y, key);
                         if (!snake.CheckPositionAndConfirmStep(x, y, newMap))
                         {
                             break;
                         }
                         map.DrawMap(newMap);
-                        Console.SetCursorPosition(0, newMap.GetLength(1) + 5);
+                        Console.SetCursorPosition(0, newMap.GetLength(0) + 1);
                         Console.WriteLine($"Текущий счет: {score}");
                         Thread.Sleep(200);
                     }
@@ -59,8 +59,5 @@ namespace SnakeGame
                 }
             }
         }
-
-        
-
     }
 }

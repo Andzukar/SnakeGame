@@ -11,7 +11,6 @@ namespace SnakeGame
         {
             Console.CursorVisible = false;
             var apple = new Apple();
-            var map = new Map();
             var snake = new Snake(apple);
             var score = 1;
             var watch = new Stopwatch();
@@ -19,6 +18,12 @@ namespace SnakeGame
             snake.ScoreUp += () =>
             {
                 score++;
+            };
+
+            snake.GameOver += () =>
+            {
+                Console.Clear();
+                Console.WriteLine("Вы проиграли!");
             };
 
             while (true)
@@ -37,7 +42,7 @@ namespace SnakeGame
                     });
 
                     Console.BackgroundColor = ConsoleColor.DarkYellow;
-                    var newMap = map.GenerateMap(size);
+                    var newMap = Map.GenerateMap(size);
                     watch.Start();
                     var (x, y) = (size / 2, size / 2);
                     snake.AddNewSnakePart(x, y);
@@ -50,7 +55,7 @@ namespace SnakeGame
                         {
                             break;
                         }
-                        map.DrawMap(newMap);
+                        Map.DrawMap(newMap);
                         ShowUI(newMap, score, watch);
                         Thread.Sleep(200);
                     }

@@ -1,11 +1,11 @@
 ﻿using Snake;
-using System.Runtime.CompilerServices;
 
 namespace SnakeGame
 {
     internal class Snake
     {
         internal event Action ScoreUp;
+        internal event Action GameOver;
 
         private Dictionary<int, SnakeItem> _snakeParts;
         private readonly Apple _apple;
@@ -49,14 +49,12 @@ namespace SnakeGame
                 case Constant.MapBorderDesignation:
                 case Constant.SnakeDesignation 
                 when y != SnakeHead.CurrentPosition.X && x != SnakeHead.CurrentPosition.Y:
-                    Console.Clear();
-                    _snakeParts.Clear();
-                    Console.WriteLine("Вы проиграли!");
+                    GameOver?.Invoke();
                     return false;
                 case Constant.AppleDesignation:
                     AddNewSnakePart(x, y);
                     map[y, x] = Constant.EmptyCell;
-                    ScoreUp();
+                    ScoreUp?.Invoke();
                     _apple.CreateApple(map);
                     break;
             }

@@ -8,7 +8,7 @@ namespace SnakeGame
 
         private static char[,]? map;
 
-        internal char[,] GenerateMap(int size)
+        internal static char[,] GenerateMap(int size)
         {
             map = new char[size, size * 2];
             for (var i = 0; i < map.GetLength(0); i++)
@@ -26,7 +26,7 @@ namespace SnakeGame
         }
 
 
-        internal void DrawMap(char[,] map)
+        internal static void DrawMap(char[,] map)
         {
             for (var i = 0; i < map.GetLength(0); i++)
             {

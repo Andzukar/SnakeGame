@@ -5,6 +5,8 @@ namespace SnakeGame
 {
     internal class Snake
     {
+        internal event Action ScoreUp;
+
         private Dictionary<int, SnakeItem> _snakeParts;
         private readonly Apple _apple;
 
@@ -54,6 +56,7 @@ namespace SnakeGame
                 case Constant.AppleDesignation:
                     AddNewSnakePart(x, y);
                     map[y, x] = Constant.EmptyCell;
+                    ScoreUp();
                     _apple.CreateApple(map);
                     break;
             }

@@ -18,8 +18,7 @@ namespace SnakeGame
         {
             var x = _random.Next(1, map.GetLength(0) - 1);
             var y = _random.Next(1, map.GetLength(1) - 1);
-            if (map[x,y] is Constant.SnakeDesignation 
-             || map[x, y] is Constant.MapBorderDesignation)
+            if (map[x,y] is not Constant.EmptyCell)
             {
                 CreateApple(map);
                 return;

@@ -1,5 +1,7 @@
 ﻿using Snake;
 using SnakeGame;
+using System.Diagnostics;
+using static System.Formats.Asn1.AsnWriter;
 
 namespace SnakeGame
 {
@@ -12,6 +14,7 @@ namespace SnakeGame
             var map = new Map();
             var snake = new Snake(apple);
             var score = 1;
+            var watch = new Stopwatch();
 
             snake.ScoreUp += () =>
             {
@@ -35,6 +38,7 @@ namespace SnakeGame
 
                     Console.BackgroundColor = ConsoleColor.DarkYellow;
                     var newMap = map.GenerateMap(size);
+                    watch.Start();
                     var (x, y) = (size / 2, size / 2);
                     snake.AddNewSnakePart(x, y);
                     apple.CreateApple(newMap);
@@ -47,8 +51,7 @@ namespace SnakeGame
                             break;
                         }
                         map.DrawMap(newMap);
-                        Console.SetCursorPosition(0, newMap.GetLength(0) + 1);
-                        Console.WriteLine($"Текущий счет: {score}");
+                        ShowUI(newMap, score, watch);
                         Thread.Sleep(200);
                     }
                 }
@@ -58,6 +61,15 @@ namespace SnakeGame
                     Console.WriteLine("Вы ввели недопустимые данные, размер карты должен быть целочисленным числом");
                 }
             }
+        }
+
+
+        private static void ShowUI(char[,] map, int score, Stopwatch watch)
+        {
+            Console.SetCursorPosition(0, map.GetLength(0) + 1);
+            Console.WriteLine($"Current score: {score}");
+            Console.WriteLine($"Current time: {watch.Elapsed.ToString("mm\\:ss\\.ff")}");
+
         }
     }
 }

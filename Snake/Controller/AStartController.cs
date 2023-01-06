@@ -22,9 +22,6 @@ namespace SnakeGame.Controller
             var openList = new List<Position>();
             var closedList = new List<Position>();
 
-            openList.Add(startPosition);
-            closedList.Add(startPosition);
-
             var neigbours = GetNeigbours(startPosition);
 
             foreach (var neigbour in neigbours)
@@ -43,7 +40,7 @@ namespace SnakeGame.Controller
                 }
             }
 
-            return openList.Except(closedList)
+            return openList
                 .FirstOrDefault(heuristicDistance
                 .Aggregate((item1, item2) => item1.Value < item2.Value ? item1 : item2).Key);
         }

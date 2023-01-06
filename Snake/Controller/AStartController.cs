@@ -4,6 +4,8 @@ namespace SnakeGame.Controller
 {
     internal class AStartController : IMove
     {
+        internal static List<Position> _closedList = new();
+
         public void MakeStep(ref int x, ref int y)
         {
             var nextCell = NextCell(new Position(x, y), GetApplePosition());
@@ -13,24 +15,23 @@ namespace SnakeGame.Controller
                 x = nextCell.Value.X;
                 y = nextCell.Value.Y;
             }
-
         }
 
-        private Position? NextCell(Position startPosition, Position endPosition)
+        private static Position? NextCell(Position startPosition, Position endPosition)
         {
             var heuristicDistance = new Dictionary<Position, int>();
 
             var neigbours = GetNeigbours(startPosition);
 
-            foreach (var neigbour in neigbours)
+            foreach (var neigbour in neigbours.Except(_closedList))
             {
                 var cost = Math.Abs(neigbour.X - endPosition.X) + Math.Abs(neigbour.Y - endPosition.Y);
                 heuristicDistance[neigbour] = cost;
             }
 
             var minCost = int.MaxValue;
-            Position? nextPosition = null;
-            foreach(var neigbour in heuristicDistance)
+            var nextPosition = startPosition;
+            foreach (var neigbour in heuristicDistance)
             {
                 if (neigbour.Value < minCost)
                 {
@@ -38,10 +39,11 @@ namespace SnakeGame.Controller
                     nextPosition = neigbour.Key;
                 }
             }
+            _closedList.Add(nextPosition);
             return nextPosition;
         }
 
-        private List<Position> GetNeigbours(Position cell)
+        private static List<Position> GetNeigbours(Position cell)
         {
             var allPossibleNeigbours = new List<Position> {
                 new Position(cell.X, cell.Y + 1),
@@ -53,7 +55,7 @@ namespace SnakeGame.Controller
             var blockedPath = new List<Position>();
             foreach (var n in allPossibleNeigbours)
             {
-                var cellFillCharacter = Map.GetCurrentMap[n.X, n.Y];
+                var cellFillCharacter = Map.GetCurrentMap[n.Y, n.X];
                 if (cellFillCharacter is Constant.MapBorderDesignation
                  || cellFillCharacter is Constant.SnakeDesignation)
                 {
@@ -63,7 +65,7 @@ namespace SnakeGame.Controller
             return allPossibleNeigbours.Except(blockedPath).ToList();
         }
 
-        private Position GetApplePosition() => Apple.CurrentApplePosition;
+        private static Position GetApplePosition() => Apple.CurrentApplePosition;
 
     }
 }

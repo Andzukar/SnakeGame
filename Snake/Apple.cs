@@ -1,4 +1,5 @@
 ﻿using Snake;
+using SnakeGame.Controller;
 using System.ComponentModel;
 using System.Reflection.Metadata;
 using System.Security.Cryptography.X509Certificates;
@@ -26,6 +27,7 @@ namespace SnakeGame
             }
             map[x, y] = Constant.AppleDesignation;
             CurrentApplePosition = new Position(x, y);
+            AStartController._closedList.Clear();
         }
     }
 }

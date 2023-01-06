@@ -25,7 +25,6 @@ namespace SnakeGame
             return map;
         }
 
-
         internal static void DrawMap(char[,] map)
         {
             for (var i = 0; i < map.GetLength(0); i++)

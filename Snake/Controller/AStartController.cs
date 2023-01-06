@@ -27,21 +27,24 @@ namespace SnakeGame.Controller
             _closedList.Add(currentPosition);
             foreach (var neigbour in neigbours.Except(_closedList))
             {
-                var cost = Vector2.Distance(new Vector2(neigbour.X, neigbour.Y), new Vector2(applePosition.X, applePosition.Y));
+                var cost = Math.Abs(neigbour.X - applePosition.X) + Math.Abs(neigbour.Y - applePosition.Y);
                 heuristicDistance.Add(neigbour, cost);
             }
 
-            var minCost = float.MinValue;
-            var nextPosition = new Position(0, 0);
+            var maxCost = float.MinValue;
+            Position? nextPosition = null;
             foreach (var neigbour in heuristicDistance)
             {
-                if (neigbour.Value > minCost)
+                if (neigbour.Value > maxCost)
                 {
-                    minCost = neigbour.Value;
+                    maxCost = neigbour.Value;
                     nextPosition = neigbour.Key;
                 }
             }
-            _closedList.Add(nextPosition);
+            if (nextPosition.HasValue)
+            {
+                _closedList.Add(nextPosition.Value);
+            }
 
             return nextPosition;
         }
@@ -55,17 +58,23 @@ namespace SnakeGame.Controller
                 new Position(cell.X - 1, cell.Y)
             };
 
-            var blockedPath = new List<Position>();
-            foreach (var neigbour in allPossibleNeigbours)
+            foreach (var neigbour in allPossibleNeigbours.ToList())
             {
+                if (neigbour.X < 0 || neigbour.Y < 0)
+                {
+                    allPossibleNeigbours.Remove(neigbour);
+                    continue;
+                }
+
                 var cellFillCharacter = Map.GetCurrentMap[neigbour.Y, neigbour.X];
                 if (cellFillCharacter is Constant.MapBorderDesignation
                  || cellFillCharacter is Constant.SnakeDesignation)
                 {
-                    blockedPath.Add(neigbour);
+                    allPossibleNeigbours.Remove(neigbour);
                 }
             }
-            return allPossibleNeigbours.Except(blockedPath).Except(_closedList).ToList();
+
+            return allPossibleNeigbours;
         }
 
         private static Position GetApplePosition() => Apple.CurrentApplePosition;

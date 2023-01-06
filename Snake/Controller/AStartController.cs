@@ -19,16 +19,12 @@ namespace SnakeGame.Controller
 
         private Position? NextCell(Position startPosition, Position endPosition)
         {
-            var path = new List<Position>();
             var heuristicDistance = new Dictionary<Position, int>();
             var openList = new List<Position>();
             var closedList = new List<Position>();
 
             var currentCell = startPosition;
             openList.Add(currentCell);
-
-
-            path.Add(currentCell);
             closedList.Add(currentCell);
             var neigbours = GetNeigbours(currentCell);
 

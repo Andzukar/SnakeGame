@@ -8,13 +8,12 @@ namespace SnakeGame.Controller
         {
             var nextCell = NextCell(new Position(x, y), GetApplePosition());
 
-            if (nextCell is null)
+            if (nextCell.HasValue)
             {
-                return;
+                x = nextCell.Value.X;
+                y = nextCell.Value.Y;
             }
 
-            x = nextCell.Value.X;
-            y = nextCell.Value.Y;
         }
 
         private Position? NextCell(Position startPosition, Position endPosition)
@@ -23,10 +22,10 @@ namespace SnakeGame.Controller
             var openList = new List<Position>();
             var closedList = new List<Position>();
 
-            var currentCell = startPosition;
-            openList.Add(currentCell);
-            closedList.Add(currentCell);
-            var neigbours = GetNeigbours(currentCell);
+            openList.Add(startPosition);
+            closedList.Add(startPosition);
+
+            var neigbours = GetNeigbours(startPosition);
 
             foreach (var neigbour in neigbours)
             {
@@ -44,7 +43,7 @@ namespace SnakeGame.Controller
                 }
             }
 
-            return currentCell = openList.Except(closedList)
+            return openList.Except(closedList)
                 .FirstOrDefault(heuristicDistance
                 .Aggregate((item1, item2) => item1.Value < item2.Value ? item1 : item2).Key);
         }

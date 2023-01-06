@@ -42,6 +42,7 @@ namespace SnakeGame.Controller
                 }
             }
             _closedList.Add(nextPosition);
+
             return nextPosition;
         }
 
@@ -64,7 +65,7 @@ namespace SnakeGame.Controller
                     blockedPath.Add(neigbour);
                 }
             }
-            return allPossibleNeigbours.Except(blockedPath).ToList();
+            return allPossibleNeigbours.Except(blockedPath).Except(_closedList).ToList();
         }
 
         private static Position GetApplePosition() => Apple.CurrentApplePosition;

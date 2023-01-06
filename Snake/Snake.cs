@@ -5,7 +5,7 @@ namespace SnakeGame
     internal class Snake
     {
         internal event Action ScoreUp;
-        internal event Action GameOver;
+        internal event Action<string> GameOver;
         internal SnakeItem SnakeHead => _snakeParts[0];
 
         private Dictionary<int, SnakeItem> _snakeParts;
@@ -24,9 +24,11 @@ namespace SnakeGame
             switch (map[y, x])
             {
                 case Constant.MapBorderDesignation:
+                    GameOver?.Invoke("You hit the wall!");
+                    return false;
                 case Constant.SnakeDesignation 
                 when y != SnakeHead.CurrentPosition.X && x != SnakeHead.CurrentPosition.Y:
-                    GameOver?.Invoke();
+                    GameOver?.Invoke("You ate yourself!");
                     return false;
                 case Constant.AppleDesignation:
                     AddNewSnakePart(x, y);

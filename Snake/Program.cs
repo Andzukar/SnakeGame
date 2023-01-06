@@ -19,10 +19,11 @@ namespace SnakeGame
                 score++;
             };
 
-            snake.GameOver += () =>
+            snake.GameOver += (string message) =>
             {
                 Console.Clear();
                 Console.WriteLine("You lose!");
+                Console.WriteLine(message);
                 Console.WriteLine($"Total score: {score}");
                 Console.WriteLine($"Total time: {watch.Elapsed:mm\\:ss\\.ff}");
             };

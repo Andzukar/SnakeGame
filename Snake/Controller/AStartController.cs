@@ -19,28 +19,17 @@ namespace SnakeGame.Controller
         private Position? NextCell(Position startPosition, Position endPosition)
         {
             var heuristicDistance = new Dictionary<Position, int>();
-            var openList = new List<Position>();
             var closedList = new List<Position>();
 
             var neigbours = GetNeigbours(startPosition);
 
             foreach (var neigbour in neigbours)
             {
-                openList.Add(neigbour);
-
-                if (closedList.Contains(neigbour))
-                {
-                    continue;
-                }
-
                 var cost = Math.Abs(neigbour.X - endPosition.X) + Math.Abs(neigbour.Y - endPosition.Y);
-                if (!heuristicDistance.TryAdd(neigbour, cost))
-                {
-                    heuristicDistance[neigbour] = cost;
-                }
+                heuristicDistance[neigbour] = cost;
             }
 
-            return openList
+            return neigbours
                 .FirstOrDefault(heuristicDistance
                 .Aggregate((item1, item2) => item1.Value < item2.Value ? item1 : item2).Key);
         }

@@ -1,10 +1,12 @@
 ﻿using Snake;
 using SnakeGame.Interface;
+using System.Numerics;
+
 namespace SnakeGame.Controller
 {
     internal class AStartController : IMove
     {
-        internal static List<Position> _closedList = new();
+        internal readonly static List<Position> _closedList = new();
 
         public void MakeStep(ref int x, ref int y)
         {
@@ -17,23 +19,23 @@ namespace SnakeGame.Controller
             }
         }
 
-        private static Position? NextCell(Position startPosition, Position endPosition)
+        private static Position? NextCell(Position currentPosition, Position applePosition)
         {
-            var heuristicDistance = new Dictionary<Position, int>();
+            var heuristicDistance = new Dictionary<Position, float>();
 
-            var neigbours = GetNeigbours(startPosition);
-
+            var neigbours = GetNeigbours(currentPosition);
+            _closedList.Add(currentPosition);
             foreach (var neigbour in neigbours.Except(_closedList))
             {
-                var cost = Math.Abs(neigbour.X - endPosition.X) + Math.Abs(neigbour.Y - endPosition.Y);
-                heuristicDistance[neigbour] = cost;
+                var cost = Vector2.Distance(new Vector2(neigbour.X, neigbour.Y), new Vector2(applePosition.X, applePosition.Y));
+                heuristicDistance.Add(neigbour, cost);
             }
 
-            var minCost = int.MaxValue;
-            var nextPosition = startPosition;
+            var minCost = float.MinValue;
+            var nextPosition = new Position(0, 0);
             foreach (var neigbour in heuristicDistance)
             {
-                if (neigbour.Value < minCost)
+                if (neigbour.Value > minCost)
                 {
                     minCost = neigbour.Value;
                     nextPosition = neigbour.Key;
@@ -53,13 +55,13 @@ namespace SnakeGame.Controller
             };
 
             var blockedPath = new List<Position>();
-            foreach (var n in allPossibleNeigbours)
+            foreach (var neigbour in allPossibleNeigbours)
             {
-                var cellFillCharacter = Map.GetCurrentMap[n.Y, n.X];
+                var cellFillCharacter = Map.GetCurrentMap[neigbour.Y, neigbour.X];
                 if (cellFillCharacter is Constant.MapBorderDesignation
                  || cellFillCharacter is Constant.SnakeDesignation)
                 {
-                    blockedPath.Add(n);
+                    blockedPath.Add(neigbour);
                 }
             }
             return allPossibleNeigbours.Except(blockedPath).ToList();

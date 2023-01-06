@@ -22,7 +22,9 @@ namespace SnakeGame
             snake.GameOver += () =>
             {
                 Console.Clear();
-                Console.WriteLine("Вы проиграли!");
+                Console.WriteLine("You lose!");
+                Console.WriteLine($"Total score: {score}");
+                Console.WriteLine($"Total time: {watch.Elapsed:mm\\:ss\\.ff}");
             };
 
             while (true)
@@ -49,7 +51,7 @@ namespace SnakeGame
                         }
                         Map.DrawMap(newMap);
                         ShowUI(newMap, score, watch);
-                        Thread.Sleep(200);
+                        Thread.Sleep(1);
                     }
                 }
                 else

@@ -1,32 +1,23 @@
 ﻿using Snake;
 using SnakeGame.Interface;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Diagnostics.Contracts;
-using System.IO;
-using System.Linq;
-using System.Numerics;
-using System.Text;
 namespace SnakeGame.Controller
 {
     internal class AStartController : IMove
     {
-        private char[,] _map = Map.GetCurrentMap;
-
         public void MakeStep(ref int x, ref int y)
         {
-            var path = FindPath(new Position(x, y), GetApplePosition());
+            var nextCell = NextCell(new Position(x, y), GetApplePosition());
 
-            if (path is null)
+            if (nextCell is null)
             {
                 return;
             }
 
-
+            x = nextCell.Value.X;
+            y = nextCell.Value.Y;
         }
 
-        private List<Position>? FindPath(Position startPosition, Position endPosition)
+        private Position? NextCell(Position startPosition, Position endPosition)
         {
             var path = new List<Position>();
             var heuristicDistance = new Dictionary<Position, int>();
@@ -35,36 +26,31 @@ namespace SnakeGame.Controller
 
             var currentCell = startPosition;
             openList.Add(currentCell);
-            while (openList.Count is not 0)
+
+
+            path.Add(currentCell);
+            closedList.Add(currentCell);
+            var neigbours = GetNeigbours(currentCell);
+
+            foreach (var neigbour in neigbours)
             {
-                path.Add(currentCell);
-                closedList.Add(currentCell);
-                var neigbours = GetNeigbours(currentCell);
+                openList.Add(neigbour);
 
-                foreach (var neigbour in neigbours)
+                if (closedList.Contains(neigbour))
                 {
-                    openList.Add(neigbour);
-
-                    if (closedList.Contains(neigbour))
-                    {
-                        continue;
-                    }
-
-                    var cost = Math.Abs(neigbour.X - endPosition.X) + Math.Abs(neigbour.Y - endPosition.Y);
-                    if (!heuristicDistance.TryAdd(neigbour, cost))
-                    {
-                        heuristicDistance[neigbour] = cost;
-                    }
+                    continue;
                 }
 
-                currentCell = openList.Except(closedList).FirstOrDefault(heuristicDistance.Aggregate((item1, item2) => item1.Value < item2.Value ? item1 : item2).Key);
-            
-                if (currentCell == endPosition)
+                var cost = Math.Abs(neigbour.X - endPosition.X) + Math.Abs(neigbour.Y - endPosition.Y);
+                if (!heuristicDistance.TryAdd(neigbour, cost))
                 {
-                    return path;
+                    heuristicDistance[neigbour] = cost;
                 }
             }
-            return null;
+
+            return currentCell = openList.Except(closedList)
+                .FirstOrDefault(heuristicDistance
+                .Aggregate((item1, item2) => item1.Value < item2.Value ? item1 : item2).Key);
         }
 
         private List<Position> GetNeigbours(Position cell)
@@ -79,7 +65,7 @@ namespace SnakeGame.Controller
             var blockedPath = new List<Position>();
             foreach (var n in allPossibleNeigbours)
             {
-                var cellFillCharacter = _map[n.X, n.Y];
+                var cellFillCharacter = Map.GetCurrentMap[n.X, n.Y];
                 if (cellFillCharacter is Constant.MapBorderDesignation
                  || cellFillCharacter is Constant.SnakeDesignation)
                 {

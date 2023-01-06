@@ -8,6 +8,7 @@ namespace SnakeGame
 {
     internal class Apple
     {
+        internal static Position CurrentApplePosition { get; private set; }
         private readonly Random _random;
         public Apple()
         {
@@ -24,6 +25,7 @@ namespace SnakeGame
                 return;
             }
             map[x, y] = Constant.AppleDesignation;
+            CurrentApplePosition = new Position(x, y);
         }
     }
 }

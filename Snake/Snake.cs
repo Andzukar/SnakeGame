@@ -6,39 +6,16 @@ namespace SnakeGame
     {
         internal event Action ScoreUp;
         internal event Action GameOver;
+        internal SnakeItem SnakeHead => _snakeParts[0];
 
         private Dictionary<int, SnakeItem> _snakeParts;
         private readonly Apple _apple;
 
-        private SnakeItem SnakeHead => _snakeParts[0];
 
         internal Snake(Apple apple)
         {
             _snakeParts = new Dictionary<int, SnakeItem>();
             _apple = apple;
-        }
-
-        internal void MakeStep(ref int x, ref int y, ConsoleKey? key)
-        {
-            if (key.HasValue)
-            {
-                SnakeHead.PreviousPosition = new Position(x, y);
-                switch (key.Value)
-                {
-                    case ConsoleKey.LeftArrow:
-                        x--;
-                        break;
-                    case ConsoleKey.RightArrow:
-                        x++;
-                        break;
-                    case ConsoleKey.UpArrow:
-                        y--;
-                        break;
-                    case ConsoleKey.DownArrow:
-                        y++;
-                        break;
-                }
-            }
         }
 
         internal bool CheckPositionAndConfirmStep(int x, int y, char[,] map)

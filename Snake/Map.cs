@@ -4,7 +4,7 @@ namespace SnakeGame
 {
     internal class Map
     {
-        internal char[,] GetCurrentMap => map;
+        internal static char[,] GetCurrentMap => map;
 
         private static char[,]? map;
 

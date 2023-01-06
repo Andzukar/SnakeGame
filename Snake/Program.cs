@@ -1,7 +1,6 @@
-﻿using Snake;
-using SnakeGame;
+﻿using SnakeGame.Controller;
+using SnakeGame.Interface;
 using System.Diagnostics;
-using static System.Formats.Asn1.AsnWriter;
 
 namespace SnakeGame
 {
@@ -32,25 +31,18 @@ namespace SnakeGame
                 var mapSize = Console.ReadLine();
                 if (int.TryParse(mapSize, out var size))
                 {
-                    ConsoleKey? key = null;
-                    Task.Run(() =>
-                    {
-                        while (true)
-                        {
-                            key = Console.ReadKey().Key;
-                        }
-                    });
-
                     Console.BackgroundColor = ConsoleColor.DarkYellow;
                     var newMap = Map.GenerateMap(size);
                     watch.Start();
                     var (x, y) = (size / 2, size / 2);
                     snake.AddNewSnakePart(x, y);
                     apple.CreateApple(newMap);
+                    var controller = ChooseControllType();
                     while (true)
                     {
                         Console.Clear();
-                        snake.MakeStep(ref x, ref y, key);
+                        snake.SnakeHead.PreviousPosition = new Position(x, y);
+                        controller.MakeStep(ref x, ref y);
                         if (!snake.CheckPositionAndConfirmStep(x, y, newMap))
                         {
                             break;
@@ -73,8 +65,18 @@ namespace SnakeGame
         {
             Console.SetCursorPosition(0, map.GetLength(0) + 1);
             Console.WriteLine($"Current score: {score}");
-            Console.WriteLine($"Current time: {watch.Elapsed.ToString("mm\\:ss\\.ff")}");
+            Console.WriteLine($"Current time: {watch.Elapsed:mm\\:ss\\.ff}");
+        }
 
+        private static IMove ChooseControllType()
+        {
+            Console.WriteLine("Выберите тип управления: 1 - ручной, 2 - авто");
+            return Console.ReadLine() switch
+            {
+                "1" => new ManualController(),
+                "2" => new AStartController(),
+                _ => throw new NotImplementedException(),
+            };
         }
     }
 }

@@ -12,16 +12,16 @@ namespace SnakeGame.Controller
 
         public void MakeStep(ref int x, ref int y)
         {
-            var nextCell = GetNextCell(new Position(x, y), GetApplePosition());
+            var nextPosition = GetNextPosition(new Position(x, y), GetApplePosition());
 
-            if (nextCell.HasValue)
+            if (nextPosition.HasValue)
             {
-                x = nextCell.Value.X;
-                y = nextCell.Value.Y;
+                x = nextPosition.Value.X;
+                y = nextPosition.Value.Y;
             }
         }
 
-        private static Position? GetNextCell(Position currentPosition, Position applePosition)
+        private static Position? GetNextPosition(Position currentPosition, Position applePosition)
         {
             var heuristicDistance = new Dictionary<Position, int>();
             var path = new Dictionary<Position, Position>();
@@ -63,7 +63,6 @@ namespace SnakeGame.Controller
                 {
                     return GetParentOfCurrentCell(path, currentPosition, startPosition);
                 }
-
             }
 
             return null;
@@ -105,6 +104,7 @@ namespace SnakeGame.Controller
                     openList.Select(o => heuristicDistance
                     .Aggregate((item1, item2) => item1.Value < item2.Value ? item1 : item2).Key)
                     .FirstOrDefault();
+
         private static Position GetApplePosition() => Apple.CurrentApplePosition;
 
     }

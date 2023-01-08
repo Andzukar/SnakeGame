@@ -1,9 +1,5 @@
 ﻿using Snake;
 using SnakeGame.Interface;
-using System.Diagnostics;
-using System.IO;
-using System.Net;
-using System.Numerics;
 
 namespace SnakeGame.Controller
 {

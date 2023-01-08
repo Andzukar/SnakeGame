@@ -52,10 +52,10 @@ namespace SnakeGame
                         {
                             break;
                         }
-                        Map.GetCurrentMap[y, x] = Constant.SnakeDesignation;
+
                         Map.DrawMap(newMap);
                         ShowUI(newMap, score, watch);
-                        Thread.Sleep(1);
+                        Thread.Sleep(100);
                     }
                 }
                 else

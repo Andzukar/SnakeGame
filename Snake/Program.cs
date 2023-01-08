@@ -1,4 +1,5 @@
-﻿using SnakeGame.Controller;
+﻿using Snake;
+using SnakeGame.Controller;
 using SnakeGame.Interface;
 using System.Diagnostics;
 
@@ -46,10 +47,12 @@ namespace SnakeGame
                         Console.Clear();
                         snake.SnakeHead.PreviousPosition = new Position(x, y);
                         controller.MakeStep(ref x, ref y);
+
                         if (!snake.CheckPositionAndConfirmStep(x, y, newMap))
                         {
                             break;
                         }
+                        Map.GetCurrentMap[y, x] = Constant.SnakeDesignation;
                         Map.DrawMap(newMap);
                         ShowUI(newMap, score, watch);
                         Thread.Sleep(1);

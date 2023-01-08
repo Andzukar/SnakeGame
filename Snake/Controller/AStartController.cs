@@ -1,16 +1,18 @@
 ﻿using Snake;
 using SnakeGame.Interface;
+using System.Diagnostics;
+using System.IO;
+using System.Net;
 using System.Numerics;
 
 namespace SnakeGame.Controller
 {
     internal class AStartController : IMove
     {
-        internal readonly static List<Position> _closedList = new();
 
         public void MakeStep(ref int x, ref int y)
         {
-            var nextCell = NextCell(new Position(x, y), GetApplePosition());
+            var nextCell = GetNextCell(new Position(x, y), GetApplePosition());
 
             if (nextCell.HasValue)
             {
@@ -19,34 +21,52 @@ namespace SnakeGame.Controller
             }
         }
 
-        private static Position? NextCell(Position currentPosition, Position applePosition)
+        private static Position? GetNextCell(Position currentPosition, Position applePosition)
         {
-            var heuristicDistance = new Dictionary<Position, float>();
+            var heuristicDistance = new Dictionary<Position, int>();
+            var path = new Dictionary<Position, Position>();
+            var openList = new List<Position>();
+            var closedList = new List<Position>();
+            var startPosition = currentPosition;
 
-            var neigbours = GetNeigbours(currentPosition);
-            _closedList.Add(currentPosition);
-            foreach (var neigbour in neigbours.Except(_closedList))
+            openList.Add(currentPosition);
+            while (openList.Count is not 0)
             {
-                var cost = Math.Abs(neigbour.X - applePosition.X) + Math.Abs(neigbour.Y - applePosition.Y);
-                heuristicDistance.Add(neigbour, cost);
-            }
+                openList.Remove(currentPosition);
+                closedList.Add(currentPosition);
 
-            var maxCost = float.MinValue;
-            Position? nextPosition = null;
-            foreach (var neigbour in heuristicDistance)
-            {
-                if (neigbour.Value > maxCost)
+                var neigbours = GetNeigbours(currentPosition);
+
+                foreach (var neigbour in neigbours.Except(closedList))
                 {
-                    maxCost = neigbour.Value;
-                    nextPosition = neigbour.Key;
+                    if (!openList.Contains(neigbour))
+                    {
+                        openList.Add(neigbour);
+                    }
+
+                    if (!path.TryAdd(neigbour, currentPosition))
+                    {
+                        path[neigbour] = currentPosition;
+                    }
+
+                    var heuristicCost = Math.Abs(neigbour.X - applePosition.X) + Math.Abs(neigbour.Y - applePosition.Y);
+
+                    if (!heuristicDistance.TryAdd(neigbour, heuristicCost))
+                    {
+                        heuristicDistance[neigbour] = heuristicCost;
+                    }
                 }
-            }
-            if (nextPosition.HasValue)
-            {
-                _closedList.Add(nextPosition.Value);
+
+                currentPosition = GetPositionWithMinCost(openList, heuristicDistance);
+
+                if (currentPosition == applePosition)
+                {
+                    return GetParentOfCurrentCell(path, currentPosition, startPosition);
+                }
+
             }
 
-            return nextPosition;
+            return null;
         }
 
         private static List<Position> GetNeigbours(Position cell)
@@ -60,12 +80,6 @@ namespace SnakeGame.Controller
 
             foreach (var neigbour in allPossibleNeigbours.ToList())
             {
-                if (neigbour.X < 0 || neigbour.Y < 0)
-                {
-                    allPossibleNeigbours.Remove(neigbour);
-                    continue;
-                }
-
                 var cellFillCharacter = Map.GetCurrentMap[neigbour.Y, neigbour.X];
                 if (cellFillCharacter is Constant.MapBorderDesignation
                  || cellFillCharacter is Constant.SnakeDesignation)
@@ -77,6 +91,20 @@ namespace SnakeGame.Controller
             return allPossibleNeigbours;
         }
 
+        private static Position GetParentOfCurrentCell(Dictionary<Position, Position> cellParents, Position currentPosition, Position startPosition)
+        {
+            var cell = cellParents.FirstOrDefault(c => c.Key == currentPosition);
+            while (cell.Value != startPosition)
+            {
+                cell = cellParents.FirstOrDefault(c => c.Key == cell.Value);
+            }
+            return cell.Key;
+        }
+
+        private static Position GetPositionWithMinCost(List<Position> openList, Dictionary<Position, int> heuristicDistance) =>
+                    openList.Select(o => heuristicDistance
+                    .Aggregate((item1, item2) => item1.Value < item2.Value ? item1 : item2).Key)
+                    .FirstOrDefault();
         private static Position GetApplePosition() => Apple.CurrentApplePosition;
 
     }

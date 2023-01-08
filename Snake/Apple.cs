@@ -18,16 +18,15 @@ namespace SnakeGame
 
         internal void CreateApple(char[,] map)
         {
-            var x = _random.Next(2, map.GetLength(0) - 1);
-            var y = _random.Next(2, map.GetLength(1) - 1);
-            if (map[x,y] is not Constant.EmptyCell)
+            var x = _random.Next(2, map.GetLength(1) - 1);
+            var y = _random.Next(2, map.GetLength(0) - 1);
+            if (map[y, x] is not Constant.EmptyCell)
             {
                 CreateApple(map);
                 return;
             }
-            map[x, y] = Constant.AppleDesignation;
+            map[y, x] = Constant.AppleDesignation;
             CurrentApplePosition = new Position(x, y);
-            AStartController._closedList.Clear();
         }
     }
 }

@@ -5,19 +5,15 @@ namespace SnakeGame.Controller
 {
     internal class AStartController : IMove
     {
-
         public void MakeStep(ref int x, ref int y)
         {
             var nextPosition = GetNextPosition(new Position(x, y), GetApplePosition());
 
-            if (nextPosition.HasValue)
-            {
-                x = nextPosition.Value.X;
-                y = nextPosition.Value.Y;
-            }
+            x = nextPosition.X;
+            y = nextPosition.Y;
         }
 
-        private static Position? GetNextPosition(Position currentPosition, Position applePosition)
+        private static Position GetNextPosition(Position currentPosition, Position applePosition)
         {
             var heuristicDistance = new Dictionary<Position, int>();
             var path = new Dictionary<Position, Position>();
@@ -25,8 +21,7 @@ namespace SnakeGame.Controller
             var closedList = new List<Position>();
             var startPosition = currentPosition;
 
-            openList.Add(currentPosition);
-            while (openList.Count is not 0)
+            do
             {
                 openList.Remove(currentPosition);
                 closedList.Add(currentPosition);
@@ -35,33 +30,20 @@ namespace SnakeGame.Controller
 
                 foreach (var neigbour in neigbours.Except(closedList))
                 {
-                    if (!openList.Contains(neigbour))
-                    {
-                        openList.Add(neigbour);
-                    }
+                    openList.Add(neigbour);
 
-                    if (!path.TryAdd(neigbour, currentPosition))
-                    {
-                        path[neigbour] = currentPosition;
-                    }
+                    path.AddOrUpdate(neigbour, currentPosition);
 
                     var heuristicCost = Math.Abs(neigbour.X - applePosition.X) + Math.Abs(neigbour.Y - applePosition.Y);
 
-                    if (!heuristicDistance.TryAdd(neigbour, heuristicCost))
-                    {
-                        heuristicDistance[neigbour] = heuristicCost;
-                    }
+                    heuristicDistance.AddOrUpdate(neigbour, heuristicCost);
                 }
 
                 currentPosition = GetPositionWithMinCost(openList, heuristicDistance);
 
-                if (currentPosition == applePosition)
-                {
-                    return GetParentOfCurrentCell(path, currentPosition, startPosition);
-                }
-            }
+            } while (currentPosition != applePosition);
 
-            return null;
+            return GetParentOfCurrentCell(path, currentPosition, startPosition);
         }
 
         private static List<Position> GetNeigbours(Position cell)
@@ -77,7 +59,7 @@ namespace SnakeGame.Controller
             {
                 var cellFillCharacter = Map.GetCurrentMap[neigbour.Y, neigbour.X];
                 if (cellFillCharacter is Constant.MapBorderDesignation
-                 || cellFillCharacter is Constant.SnakeDesignation)
+                 /*|| cellFillCharacter is Constant.SnakeDesignation*/)
                 {
                     allPossibleNeigbours.Remove(neigbour);
                 }

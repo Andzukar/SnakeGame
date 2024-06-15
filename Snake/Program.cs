@@ -35,8 +35,11 @@ internal class Program
 
             snake.GameOver += (string message) =>
             {
+                watch.Stop();
                 Console.Clear();
+                Console.ForegroundColor = ConsoleColor.Red;
                 Console.WriteLine($"You lose: {message}");
+                Console.ForegroundColor = ConsoleColor.White;
                 Console.WriteLine();
                 Console.WriteLine($"Total score: {score}");
                 Console.WriteLine($"Total time: {watch.Elapsed:mm\\:ss\\.ff}");
@@ -48,7 +51,7 @@ internal class Program
 
             var mapSize = Console.ReadLine();
 
-            if (int.TryParse(mapSize, out var size) && size > minMapValue && size < maxMapValue)
+            if (int.TryParse(mapSize, out var size) && size >= minMapValue && size <= maxMapValue)
             {
                 var map = new Map(size);
 
@@ -66,11 +69,14 @@ internal class Program
                     }
                 };
 
-                watch.Start();
+                var controller = ChooseControllType(map);
+
                 var (x, y) = (size / 2, size / 2);
                 snake.AddPart(x, y);
+
                 applaManager.CreateApple(map);
-                var controller = ChooseControllType(map);
+
+                watch.Start();
 
                 while (true)
                 {

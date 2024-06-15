@@ -1,2 +1,2 @@
 # Snake
-Some simple snake game with automatic play option.
+Some simple console snake game with automatic play option.

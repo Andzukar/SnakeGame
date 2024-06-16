@@ -36,31 +36,31 @@ internal class Snake
     }
 
     /// <summary>
-    /// Confirm step for snake.
+    /// Move snake.
     /// </summary>
     /// <param name="x">Point x.</param>
     /// <param name="y">Point y.</param>
     /// <param name="map">Game map.</param>
-    /// <returns>True - confirm is success, game is continue. False - game over.</returns>
-    internal bool ConfirmStep(int x, int y, Map map)
+    /// <returns>True - move is success, game is continue. False - game over.</returns>
+    internal bool Move(Position newHeadPosition, Map map)
     {
-        switch (map[y, x])
+        switch (map[newHeadPosition])
         {
             case Constant.MapBorderDesignation:
                 GameOver?.Invoke("You hit the wall!");
                 return false;
             case Constant.SnakeDesignation 
-            when y != SnakeHead.CurrentPosition.X && x != SnakeHead.CurrentPosition.Y:
+            when newHeadPosition.Y != SnakeHead.CurrentPosition.X && newHeadPosition.X != SnakeHead.CurrentPosition.Y:
                 GameOver?.Invoke("You ate yourself!");
                 return false;
             case Constant.AppleDesignation:
-                AddPart(x, y);
-                map[y, x] = Constant.EmptyPositionDesignation;
+                AddPart(newHeadPosition);
+                map[newHeadPosition] = Constant.EmptyPositionDesignation;
                 ScoreUp?.Invoke();
                 break;
         }
 
-        UpdateSnakePositions(x, y, map);
+        UpdateSnakePositions(newHeadPosition, map);
 
         return true;
     }
@@ -71,7 +71,7 @@ internal class Snake
     /// <param name="x">Point x.</param>
     /// <param name="y">Point y.</param>
     /// <param name="map">Game map.</param>
-    private void UpdateSnakePositions(int x, int y, Map map)
+    private void UpdateSnakePositions(Position newHeadPosition, Map map)
     {
         for (var i = _snakeParts.Count - 1; i > 0; i--)
         {
@@ -79,12 +79,12 @@ internal class Snake
             _snakeParts[i].CurrentPosition = _snakeParts[i - 1].CurrentPosition;
         }
 
-        SnakeHead.CurrentPosition = new Position(x, y);
+        SnakeHead.CurrentPosition = newHeadPosition;
 
         foreach (var part in _snakeParts.Values)
         {
-            map[part.CurrentPosition.Y, part.CurrentPosition.X] = Constant.SnakeDesignation;
-            map[part.PreviousPosition.Y, part.PreviousPosition.X] = Constant.EmptyPositionDesignation;
+            map[part.CurrentPosition] = Constant.SnakeDesignation;
+            map[part.PreviousPosition] = Constant.EmptyPositionDesignation;
         }
     }
 
@@ -93,9 +93,9 @@ internal class Snake
     /// </summary>
     /// <param name="x">Point x.</param>
     /// <param name="y">Point y.</param>
-    internal void AddPart(int x, int y)
+    internal void AddPart(Position partPosition)
     {
-        var newItem = new SnakePart(_snakeParts.LastOrDefault().Value?.PreviousPosition ?? new Position(x, y), new Position(x, y));
+        var newItem = new SnakePart(_snakeParts.LastOrDefault().Value?.PreviousPosition ?? partPosition, partPosition);
         _snakeParts.Add(_snakeParts.Count, newItem);
     }
 }
@@ -105,9 +105,22 @@ internal class Snake
 /// </summary>
 internal class SnakePart
 {
+    /// <summary>
+    /// Current snake part position.
+    /// </summary>
     internal Position CurrentPosition;
+
+    /// <summary>
+    /// Previous snake part position.
+    /// </summary>
     internal Position PreviousPosition;
-    public SnakePart(Position currentPosition, Position previousPosition)
+
+    /// <summary>
+    /// Initialize object type of <see cref="SnakePart"/>
+    /// </summary>
+    /// <param name="currentPosition">Current snake part position.</param>
+    /// <param name="previousPosition">Previous snake part position.</param>
+    internal SnakePart(Position currentPosition, Position previousPosition)
     {
         CurrentPosition = currentPosition;
         PreviousPosition = previousPosition;

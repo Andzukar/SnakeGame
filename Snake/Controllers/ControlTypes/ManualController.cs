@@ -27,7 +27,7 @@ internal class ManualController : IMove
     }
 
     /// <inheritdoc/>
-    public void MakeStep(ref int x, ref int y)
+    public void MakeStep(ref Position snakeHeadPosition)
     {
         ReadKeyFromKeybourd();
 
@@ -36,16 +36,16 @@ internal class ManualController : IMove
             switch (_key.Value)
             {
                 case ConsoleKey.LeftArrow:
-                    x--;
+                    snakeHeadPosition.X--;
                     break;
                 case ConsoleKey.RightArrow:
-                    x++;
+                    snakeHeadPosition.X++;
                     break;
                 case ConsoleKey.UpArrow:
-                    y--;
+                    snakeHeadPosition.Y--;
                     break;
                 case ConsoleKey.DownArrow:
-                    y++;
+                    snakeHeadPosition.Y++;
                     break;
             }
         }

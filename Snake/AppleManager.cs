@@ -35,7 +35,7 @@ internal class AppleManager
 
         var randomEmptyCell = emptyCells.OrderBy(x => _random.Next()).First();
 
-        map[randomEmptyCell.Y, randomEmptyCell.X] = Constant.AppleDesignation;
+        map[randomEmptyCell] = Constant.AppleDesignation;
         CurrentApplePosition = randomEmptyCell;
     }
 
@@ -50,10 +50,9 @@ internal class AppleManager
         {
             for (var j = 0; j < map.SizeX; j++)
             {
-                if (map[i, j] is Constant.EmptyPositionDesignation)
+                var position = new Position(j, i);
+                if (map[position] is Constant.EmptyPositionDesignation)
                 {
-                    var position = new Position(j, i);
-
                     if (position != CurrentApplePosition)
                     {
                         yield return position;

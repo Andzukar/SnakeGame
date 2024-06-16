@@ -72,7 +72,9 @@ internal class Program
                 var controller = ChooseControllType(map);
 
                 var (x, y) = (size / 2, size / 2);
-                snake.AddPart(x, y);
+                var snakeHeadPosition = new Position(x, y);
+
+                snake.AddPart(snakeHeadPosition);
 
                 applaManager.CreateApple(map);
 
@@ -81,10 +83,11 @@ internal class Program
                 while (true)
                 {
                     Console.Clear();
-                    snake.SnakeHead.PreviousPosition = new Position(x, y);
-                    controller.MakeStep(ref x, ref y);
+                    snake.SnakeHead.PreviousPosition = snakeHeadPosition;
 
-                    if (!snake.ConfirmStep(x, y, map))
+                    controller.MakeStep(ref snakeHeadPosition);
+
+                    if (!snake.Move(snakeHeadPosition, map))
                     {
                         break;
                     }

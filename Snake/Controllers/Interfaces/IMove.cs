@@ -10,5 +10,5 @@ internal interface IMove
     /// </summary>
     /// <param name="x">Point x.</param>
     /// <param name="y">Point y.</param>
-    void MakeStep(ref int x, ref int y);
+    void MakeStep(ref Position position);
 }

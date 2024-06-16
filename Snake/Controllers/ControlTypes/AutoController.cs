@@ -23,19 +23,18 @@ internal class AutoController : IMove
     }
 
     /// <inheritdoc/>
-    public void MakeStep(ref int x, ref int y)
+    public void MakeStep(ref Position snakeHeadPosition)
     {
-        var nextPosition = GetNextPosition(new Position(x, y), GetApplePosition());
+        var nextPosition = GetNextPosition(snakeHeadPosition, AppleManager.CurrentApplePosition);
 
-        x = nextPosition.X;
-        y = nextPosition.Y;
+        snakeHeadPosition = nextPosition;
     }
 
     /// <summary>
     /// Get next free position for snake.
     /// </summary>
-    /// <param name="currentPosition"></param>
-    /// <param name="applePosition"></param>
+    /// <param name="currentPosition">Current snake position.</param>
+    /// <param name="applePosition">Current apple position.</param>
     /// <returns>Next position for snake.</returns>
     private Position GetNextPosition(Position currentPosition, Position applePosition)
     {
@@ -73,14 +72,8 @@ internal class AutoController : IMove
             new(position.X, position.Y - 1),
             new(position.X + 1, position.Y),
             new(position.X - 1, position.Y)
-        }.Where(neigbour => _map[neigbour.Y, neigbour.X] != Constant.MapBorderDesignation && _map[neigbour.Y, neigbour.X] != Constant.SnakeDesignation);
+        }.Where(neigbour => _map[neigbour] != Constant.MapBorderDesignation && _map[neigbour] != Constant.SnakeDesignation);
 
         return neigbours;
     }
-
-    /// <summary>
-    /// Get current apple position.
-    /// </summary>
-    /// <returns>Current apple position.</returns>
-    private static Position GetApplePosition() => AppleManager.CurrentApplePosition;
 }

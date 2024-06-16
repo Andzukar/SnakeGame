@@ -28,10 +28,10 @@ internal class Map
     /// <param name="x">Point x.</param>
     /// <param name="y">Point y.</param>
     /// <returns>Position value.</returns>
-    internal char this[int x, int y]
+    internal char this[Position position]
     {
-        get => _map[x, y];
-        set => _map[x, y] = value;
+        get => _map[position.Y, position.X];
+        set => _map[position.Y, position.X] = value;
     }
 
     /// <summary>
@@ -47,7 +47,6 @@ internal class Map
     /// <summary>
     /// Redraw map.
     /// </summary>
-    /// <param name="map">Game map.</param>
     internal void UpdateMap()
     {
         for (var i = 0; i < SizeY; i++)

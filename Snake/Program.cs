@@ -80,9 +80,10 @@ internal class Program
 
                 watch.Start();
 
+                Console.Clear();
+                
                 while (true)
                 {
-                    Console.Clear();
                     snake.SnakeHead.PreviousPosition = snakeHeadPosition;
 
                     controller.MakeStep(ref snakeHeadPosition);

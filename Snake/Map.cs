@@ -53,6 +53,9 @@ internal class Map
         {
             for (var j = 0; j < SizeX; j++)
             {
+                Console.SetCursorPosition(j, i);
+                Console.Write(string.Empty);
+
                 switch (_map[i, j])
                 {
                     case Constant.SnakeDesignation:
@@ -81,7 +84,7 @@ internal class Map
         {
             for (var j = 0; j < SizeX; j++)
             {
-                _map[i, j] = ' ';
+                _map[i, j] = Constant.EmptyPositionDesignation;
                 _map[i, SizeX - 1] = Constant.MapBorderDesignation;
                 _map[SizeY - 1, j] = Constant.MapBorderDesignation;
                 _map[0, j] = Constant.MapBorderDesignation;
